@@ -182,7 +182,7 @@ export class ProjectStack extends cdk.Stack {
     })
     // Update method for Updating a product. It uses Cognito for
     // authorization and the auathorizer defined above.
-    catalogResource.catalogIdResource.addMethod('POST', new LambdaIntegration(updateProductsFunction), {
+    catalogResource.catalogIdResource.addMethod('PUT', new LambdaIntegration(updateProductsFunction), {
       authorizationType: AuthorizationType.COGNITO,
       authorizer: {
         authorizerId: catalogResource.apiAuthorizor.ref

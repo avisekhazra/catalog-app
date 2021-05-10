@@ -5,6 +5,7 @@ const sqs = new SQS({
     region : REGION
 })
 
+
 export default class QueueService {
 
     deleteMessage = async(message: SQS.DeleteMessageRequest) : Promise<any> =>{

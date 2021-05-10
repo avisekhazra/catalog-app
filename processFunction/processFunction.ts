@@ -1,6 +1,6 @@
 import HttpClient from './http-client';
 import IProduct from './product.model'
-import {  SQSEvent } from 'aws-lambda';
+import {  SQSEvent, SQSHandler } from 'aws-lambda';
 import QueueService from './queue.service';
 import * as winston from "winston";
 
@@ -16,7 +16,7 @@ const REGION = "eu-west-1";
 const queueService = new QueueService();
 
 
-exports.handler = async (event: SQSEvent) => {
+export const handler: SQSHandler = async (event: SQSEvent) => {
 
     const httpClient = new HttpClient(process.env.baseUrl!);
     logger.info(event);

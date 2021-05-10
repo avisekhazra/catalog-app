@@ -2,18 +2,29 @@ import HttpClient from './http-client';
 import IProduct from './product.model'
 import {  SQSEvent } from 'aws-lambda';
 import QueueService from './queue.service';
+import * as winston from "winston";
+
+const logger = winston.createLogger({
+    level: process.env.LOG_LEVEL || 'info',
+    format: winston.format.json(),
+    transports: [
+        new winston.transports.Console(),
+    ],
+});
 
 const REGION = "eu-west-1";
 const queueService = new QueueService();
 
+
 exports.handler = async (event: SQSEvent) => {
 
     const httpClient = new HttpClient(process.env.baseUrl!);
-    console.log(event);
+    logger.info(event);
+    logger.info(process.env.baseUrl);
     for (const record of event.Records) {
         const {type, data } : {type: string, data: IProduct} = JSON.parse(record.body);
         
-        console.log(`type = ${type}`);
+        logger.info(`type = ${type}`);
         if(type== 'INSERT' || type == 'MODIFY'){
 
             let retryCount = 0;
@@ -27,7 +38,10 @@ exports.handler = async (event: SQSEvent) => {
                         config,
                         response: { status }
                       } = error;
-                    console.log(status);
+                      logger.info(status);
+                      logger.info(error);
+                      if(status == 404) 
+                        failure = false;
                     retryCount = retryCount + 1 ;
                 }
             }
@@ -46,7 +60,11 @@ exports.handler = async (event: SQSEvent) => {
                         config,
                         response: { status }
                       } = error;
-                    console.log(status);
+                      logger.info(status);
+                      logger.info(error);
+                      //skipping retry for 404 cases
+                      if(status == 404) 
+                        failure = false;
                     retryCount = retryCount + 1 ;
                 }
             }

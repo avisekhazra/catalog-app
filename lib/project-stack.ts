@@ -2,11 +2,11 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { LambdaIntegration, AuthorizationType } from '@aws-cdk/aws-apigateway';
 import { AssetCode, Function, Runtime, StartingPosition } from '@aws-cdk/aws-lambda';
-import { App, Stack } from '@aws-cdk/core';
 import * as dynamo from '@aws-cdk/aws-dynamodb'
 import { DynamoEventSource, SqsDlq, SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 import {CognitoUserPool} from './cognito-userpool/cognito-userpool'
 import {ApiResource} from './rest-api/rest-api'
+import * as logs from '@aws-cdk/aws-logs';
 
 export class ProjectStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
@@ -48,8 +48,10 @@ export class ProjectStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(3),
       memorySize: 512,
       environment : {
-        "tableName" : dynamoTable.tableName
-      }
+        "tableName" : dynamoTable.tableName,
+        LOG_LEVEL: 'info'
+      },
+      logRetention : logs.RetentionDays.ONE_WEEK
     });
 
     // Function for deleting products"
@@ -60,8 +62,10 @@ export class ProjectStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(3),
       memorySize: 512,
       environment : {
-        "tableName" : dynamoTable.tableName
-      }
+        "tableName" : dynamoTable.tableName,
+        LOG_LEVEL: 'info'
+      },
+      logRetention : logs.RetentionDays.ONE_WEEK
     });
 
 
@@ -73,8 +77,10 @@ export class ProjectStack extends cdk.Stack {
           timeout: cdk.Duration.seconds(3),
           memorySize: 512,
           environment : {
-            "tableName" : dynamoTable.tableName
-          }
+            "tableName" : dynamoTable.tableName,
+            LOG_LEVEL: 'info'
+          },
+          logRetention : logs.RetentionDays.ONE_WEEK
         });
 
 
@@ -101,8 +107,10 @@ export class ProjectStack extends cdk.Stack {
       environment: {
         queueUrl: processingQueue.queueUrl,
         queueName: processingQueue.queueName,
-        queuName: processingQueue.queueArn
-      }
+        queuName: processingQueue.queueArn,
+        LOG_LEVEL: 'info'
+      },
+      logRetention : logs.RetentionDays.ONE_WEEK
     });
     dynamoTable.grantStreamRead(streamFunction.grantPrincipal);
     processingQueue.grantSendMessages(streamFunction);
@@ -131,8 +139,10 @@ export class ProjectStack extends cdk.Stack {
         queueUrl: processingQueue.queueUrl,
         queueName: processingQueue.queueName,
         queuName: processingQueue.queueArn,
-        baseUrl: 'https://ev5uwiczj6.execute-api.eu-central-1.amazonaws.com/test'
+        baseUrl: 'https://ev5uwiczj6.execute-api.eu-central-1.amazonaws.com/test',
+        LOG_LEVEL: 'info'
       },
+      logRetention : logs.RetentionDays.ONE_WEEK,
       events: [
         new SqsEventSource(processingQueue, {
           batchSize :10

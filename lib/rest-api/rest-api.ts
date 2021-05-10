@@ -1,6 +1,7 @@
 import {  Period, CfnAuthorizer, ResponseType, RequestValidator, RestApi, Resource, Model, JsonSchemaType, UsagePlan, ApiKey, UsagePlanPerApiStage } from '@aws-cdk/aws-apigateway';
 import * as cdk from '@aws-cdk/core';
 import {CognitoUserPool} from '../cognito-userpool/cognito-userpool'
+import * as logs from '@aws-cdk/aws-logs';
 
 export class ApiResource extends cdk.Construct {
     public catalogResource:Resource;
@@ -18,6 +19,7 @@ export class ApiResource extends cdk.Construct {
 
       let catalogAppRestApi = new RestApi(this, 'catalogAppRestApi', {
         restApiName: 'catalogApp Service'
+        
       });
 
       // Authorizer for the Hello World API that uses the

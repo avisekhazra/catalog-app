@@ -1,6 +1,9 @@
 ## API documentation
 https://documenter.getpostman.com/view/4958425/TzRVeRTi
 
+## API collection
+https://www.getpostman.com/collections/14682bf451ab11a1b689
+
 # Welcome to your CDK TypeScript project!
 
 You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`ProjectStack`)

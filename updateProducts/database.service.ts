@@ -14,6 +14,12 @@ export default class DatabaseService {
             return await documentClient.update(params).promise();
         } catch (error) {
             console.log(error);
+            const {code: errorCode} = error;
+            console.log(`error code = ${errorCode}`);
+            if (errorCode === 'ConditionalCheckFailedException'){
+                throw new ResponseErrorModel("NOT_FOUND","Requested Product not found.",404);
+                
+            }
             throw new ResponseErrorModel("SERVER_ERROR", "Internal Server Erorr",500 );
         }
     }

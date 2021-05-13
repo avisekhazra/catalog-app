@@ -14,6 +14,12 @@ export default class DatabaseService {
             return await documentClient.put(params).promise();
         } catch (error) {
             console.log(error);
+            const {code: errorCode} = error;
+            console.log(`error code = ${errorCode}`);
+            if (errorCode === 'ConditionalCheckFailedException'){
+                throw new ResponseErrorModel("ITEM_EXISTS","Requested Product already exists.",409);
+                
+            }
             throw new ResponseErrorModel("SERVER_ERROR", "Internal Server Erorr",500 );
         }
     }

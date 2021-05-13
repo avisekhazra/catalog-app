@@ -17,7 +17,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
       TableName: process.env.tableName!,
       Key:{
           "id": productId
-      }
+      },
+      ConditionExpression : "attribute_exists(id)" 
   };
   try{
     console.log(deleteItem);
@@ -25,9 +26,11 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
 
     return {statusCode: 204, body: '' };
   }catch(error){
-      console.log(error);
-      
+    console.log(error);
+    if(error instanceof ResponseModel){
+        return error.generate();
+    }
+    return new ResponseModel("SERVER_ERROR","Internal Server Error",500).generate();
   };
-  let errorResponse = new ResponseModel("SERVER_ERROR","Internal Server Error",500);
-  return errorResponse.generate();
+
   };

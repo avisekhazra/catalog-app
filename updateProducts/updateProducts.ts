@@ -25,6 +25,7 @@ import {
             id: id
             
         },
+        ConditionExpression : "attribute_exists(id)" ,
         UpdateExpression: "set #productName = :n, price = :p, quantity = :q",
         ExpressionAttributeValues: {
             ":n": product.getName(),
@@ -41,17 +42,18 @@ import {
       const result = await dataBaseService.update(params);
       const {Attributes: data} = result;
       const dataResponse = {
-          "data" : data
+          "data" : data!
       }
       dataResponse.data.id = id;
       
       return {statusCode: 200, body: JSON.stringify(dataResponse)};
     }catch(error){
         console.log(error);
-        let errorResponse = new ResponseModel("SERVER_ERROR","Internal Server Error",500);
-        return errorResponse.generate();
-    };
-   
+        if(error instanceof ResponseModel){
+            return error.generate();
+        }
+        return new ResponseModel("SERVER_ERROR", "Internal Server Erorr",500 ).generate();
+        
+    };  
     
-    return {statusCode: 201, body: '' };
     };

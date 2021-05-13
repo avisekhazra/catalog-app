@@ -27,6 +27,7 @@ export const handler: APIGatewayProxyHandler  = async (event: APIGatewayProxyEve
           price: product.getPrice(),
           quantity: product.getQuantity(),
       },
+      ConditionExpression : "attribute_not_exists(id)" ,
       ReturnValues: "ALL_OLD"
   }
   try{
@@ -35,7 +36,12 @@ export const handler: APIGatewayProxyHandler  = async (event: APIGatewayProxyEve
     let response_headers: ResponseHeader={
       location: `/products/${product.getId()}`
     }
-    const {Attributes: data} = result;
+    const data = {
+      id: product.getId(),
+      name: product.getName() ,
+      price: product.getPrice(),
+      quantity: product.getQuantity()
+    }
       const dataResponse = {
           "data" : data
       }
@@ -43,10 +49,11 @@ export const handler: APIGatewayProxyHandler  = async (event: APIGatewayProxyEve
     return {statusCode: 201, body: JSON.stringify(dataResponse), headers: response_headers };
   }catch(error){
       console.log(error);
+      if(error instanceof ResponseModel){
+        return error.generate();
+    }
       let errorResponse = new ResponseModel("SERVER_ERROR","Internal Server Error",500);
       return errorResponse.generate();
   };
  
-  
-  return {statusCode: 201, body: '' };
   };
